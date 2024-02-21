@@ -11,6 +11,6 @@ class RestController {
     fun testMethode(): String {
         println("/test")
 
-        return "helloWorld"
+        return "Page test pour projet evaluation groupe VOLLAND/PIUZZI/GOMEZ"
     }
 }
