@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats des matchs</title>
+    <link href="/css/main.css" rel="stylesheet"/>
+</head>
+<body>
+<h1>Ajouter un match</h1>
+
+<label for="team1">Équipe 1:</label>
+<input type="text" id="team1" name="team1"><br><br>
+
+<label for="team2">Équipe 2:</label>
+<input type="text" id="team2" name="team2"><br><br>
+
+<label for="score1">Score Équipe 1:</label>
+<input type="number" id="score1" name="score1" min="0"><br><br>
+
+<label for="score2">Score Équipe 2:</label>
+<input type="number" id="score2" name="score2" min="0"><br><br>
+
+<label for="termine">Match Terminé:</label>
+<input type="checkbox" id="termine" name="termine"><br><br>
+
+<input type="submit" value="Ajouter résultat">
+</form>
+<div th:if="${#flash.message != null}" class="alert alert-success" th:text="${#flash.message}"></div>
+</body>
+</html>
