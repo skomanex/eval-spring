@@ -2,8 +2,13 @@ package com.example.evalspring.controllers
 
 import com.example.evalspring.model.MatchRepository
 import com.example.evalspring.model.Matches
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+
+data class PasswordRequest(val password: String)
 
 @RestController
 class RestController {
@@ -24,4 +29,14 @@ class MatchRestController(private val matchRepository: MatchRepository) {
     fun getAllMatches(): List<Matches> {
         return matchRepository.findAll()
     }
+    @PostMapping("/matchesJson")
+    fun getAllMatches(@RequestBody passwordRequest: PasswordRequest): ResponseEntity<List<Matches>> {
+        return if (passwordRequest.password == "Password") {
+            ResponseEntity.ok(matchRepository.findAll())
+        } else {
+            ResponseEntity.badRequest().build()
+        }
+    }
+
+
 }
