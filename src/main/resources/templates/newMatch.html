@@ -9,24 +9,15 @@
 </head>
 <body>
 <h1>Ajouter un match</h1>
+<form th:action="@{/newMatch}" th:object="${matches}" method="post">
 
-<label for="team1">Équipe 1:</label>
-<input type="text" id="team1" name="team1"><br><br>
+    <p>Nom de l'équipe 1: <input th:field="*{team1}" type="text"/></p>
+    <p>Nom de l'équipe 2: <input th:field="*{team2}" type="text"/></p>
+    <p>Score de l'équipe 1: <input th:field="*{score1}" type="number" /></p>
+    <p>Score de l'équipe 2: <input th:field="*{score2}" type="number" /></p>
+    <p>Match terminé: <input th:field="*{termine}" type="checkbox"/></p>
 
-<label for="team2">Équipe 2:</label>
-<input type="text" id="team2" name="team2"><br><br>
-
-<label for="score1">Score Équipe 1:</label>
-<input type="number" id="score1" name="score1" min="0"><br><br>
-
-<label for="score2">Score Équipe 2:</label>
-<input type="number" id="score2" name="score2" min="0"><br><br>
-
-<label for="termine">Match Terminé:</label>
-<input type="checkbox" id="termine" name="termine"><br><br>
-
-<input type="submit" value="Ajouter résultat">
+    <input type="submit" value="Ajouter résultat">
 </form>
-<div th:if="${#flash.message != null}" class="alert alert-success" th:text="${#flash.message}"></div>
 </body>
 </html>
