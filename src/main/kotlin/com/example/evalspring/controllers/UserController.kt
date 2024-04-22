@@ -59,6 +59,7 @@ class UserController(val userService: UserService) {
     }
 }
 
+
 @GetMapping("/logout") //Affiche la page résultat
 fun logout(httpSession: HttpSession): String {
 
