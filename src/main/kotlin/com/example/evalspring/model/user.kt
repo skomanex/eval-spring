@@ -33,10 +33,10 @@ class UserService(val userRepository: UserRepository) {
     //Jeu de donnée
     private val list = ArrayList<UserBean>()
 
-        init {
-        list.add(UserBean(login="user", password =  "password"))
-        list.add(UserBean(login="bbb", password = "bbb"))
-    }
+//        init {
+//        list.add(UserBean(login="user", password =  "password"))
+//        list.add(UserBean(login="bbb", password = "bbb"))
+//    }
     //Sauvegarde
     fun save(user: UserBean) {
         //On regarde s'il n'est pas déjà en base

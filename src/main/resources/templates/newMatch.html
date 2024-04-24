@@ -11,7 +11,7 @@
 
 <h1>Ajouter un match</h1>
 <form th:action="@{/newMatch}" th:object="${matches}" method="post">
-
+    <p>Date du Match: <input th:field="*{date}" type="date"/></p>
     <p>Nom de l'équipe 1: <input th:field="*{team1}" type="text"/></p>
     <p>Nom de l'équipe 2: <input th:field="*{team2}" type="text"/></p>
     <p>Score de l'équipe 1: <input th:field="*{score1}" type="number" /></p>

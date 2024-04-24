@@ -35,7 +35,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 // Pour utiliser la sécurité
-    implementation("org.springframework.boot:spring-boot-starter-security")
+  //  implementation("org.springframework.boot:spring-boot-starter-security")
 
 }
 

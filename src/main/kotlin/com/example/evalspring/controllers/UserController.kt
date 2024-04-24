@@ -6,11 +6,10 @@ import jakarta.servlet.http.HttpSession
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 @Controller
-@RequestMapping("/user")
+//@RequestMapping("/user")
 class UserController(val userService: UserService) {
 
     //Affichage du formulaire
@@ -26,8 +25,8 @@ class UserController(val userService: UserService) {
         }
 
 
-        //Spring créera une instance de StudentBean qu'il mettra dans le model
-        return "login"
+        //Spring créera une instance de userBean qu'il mettra dans le model
+        return "/login"
     }
 
     //Traitement du formulaire
@@ -44,17 +43,17 @@ class UserController(val userService: UserService) {
             userService.insertOrCheck(userBean, session.id)
 
             //Cas qui marche
-            return "home"
+            return "/home"
         } catch (e: Exception) {
             //Affiche le détail de l'erreur dans la console serveur
             e.printStackTrace()
 
             //pour garder les données entrées dans le formulaire par l'utilisateur
-            redirect.addFlashAttribute("userBean", userBean)
+            redirect.addFlashAttribute("user", userBean)
             //Pour transmettre le message d'erreur
             redirect.addFlashAttribute("errorMessage", "Erreur : ${e.message}")
             //Cas d'erreur
-            return "redirect:/user/login" //Redirige sur /form
+            return "/login" //Redirige sur /form
         }
     }
 }

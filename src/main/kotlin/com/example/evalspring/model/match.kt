@@ -4,6 +4,8 @@ import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+
 
 @Entity
 @Table(name = "Matches")
@@ -21,7 +23,9 @@ data class Matches(
     @Column(name = "score2")
     var score2: Int = 0,
     @Column(name = "termine")
-    val termine: Boolean = false
+    val termine: Boolean = false,
+    @Column(name = "date")
+    val date: LocalDate = LocalDate.now()
 )
 
 @Repository
@@ -36,6 +40,7 @@ class MatchService(val matchRepository: MatchRepository) {
     fun save(matches: Matches) {
         matchRepository.save(matches)
     }
+
     fun updateMatch(id: Long, score1: Int, score2: Int): Matches? {
         val match = matchRepository.findById(id).orElse(null)
         if (match != null) {
@@ -45,6 +50,7 @@ class MatchService(val matchRepository: MatchRepository) {
         }
         return null
     }
+
     fun getMatchWithTermineFalse(): List<Matches> {
         return matchRepository.findByTermineFalse()
     }
