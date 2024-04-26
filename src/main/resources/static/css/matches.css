@@ -1,0 +1,19 @@
+table {
+    width: 100%; /* Adjust as needed */
+    border-collapse: collapse; /* Remove default cell borders */
+    margin: 20px auto; /* Add spacing and centering */
+}
+th {
+    background-color: #eee; /* Light gray background */
+    text-align: center; /* Center header text */
+    padding: 10px; /* Add padding for spacing */
+    border-bottom: 1px solid #ccc; /* Add bottom border */
+}
+td {
+    text-align: center; /* Center cell content */
+    padding: 8px; /* Add padding for spacing */
+    border-bottom: 1px solid #ddd; /* Add border for each row */
+}
+td:nth-child(1) { /* Target the first column (Date) */
+    width: 150px; /* Adjust width as needed */
+}

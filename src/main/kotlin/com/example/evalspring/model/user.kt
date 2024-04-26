@@ -33,21 +33,13 @@ class UserService(val userRepository: UserRepository) {
     //Jeu de donnée
     private val list = ArrayList<UserBean>()
 
-//        init {
-//        list.add(UserBean(login="user", password =  "password"))
-//        list.add(UserBean(login="bbb", password = "bbb"))
-//    }
     //Sauvegarde
     fun save(user: UserBean) {
         //On regarde s'il n'est pas déjà en base
-        val userRegister = findByLogin(user.login)
-        if (userRegister != null) {
-            list.remove(userRegister)
-        }
-        //userRepository.save(user)
-        list.add(user)
-    }
+        //val userRegister = findByLogin(user.login)
+        userRepository.save(user)
 
+    }
 
     //Insert si le login n'existe pas sinon controle le mdp
     fun insertOrCheck(userBean: UserBean, sessionId: String) {
@@ -65,19 +57,19 @@ class UserService(val userRepository: UserRepository) {
             throw Exception("Mot de passe incorrect")
         }
 
-        if (userBdd != null) {
-
-            //userBdd a son id ce qu'userBean n'a pas car il vient du post
-            userBdd.sessionId = sessionId
-            userRepository.save(userBdd)
-        } else {
-            userBean.sessionId = sessionId
-            userRepository.save(userBean)
-        }
+//        if (userBdd != null) {
+//
+//            //userBdd a son id ce qu'userBean n'a pas car il vient du post
+//            userBdd.sessionId = sessionId
+//            userRepository.save(userBdd)
+//        } else {
+//            userBean.sessionId = sessionId
+//            userRepository.save(userBean)
+//        }
     }
 
     //Retourne la liste
-    fun load() = list
+    fun load() = userRepository.findAll()
 
     //Retourne l'utilisateur qui a ce login ou null
     fun findByLogin(login: String) = userRepository.findByLogin(login)
@@ -87,11 +79,12 @@ class UserService(val userRepository: UserRepository) {
     fun findBySessionId(sessionId: String?): UserBean? =
         if (sessionId != null) userRepository.findBySessionId(sessionId) else null
 
-
-    fun logout(sessionId: String) {
-        userRepository.findBySessionId(sessionId)?.let {
-            it.sessionId = ""
-            userRepository.save(it)
-        }
-    }
 }
+//    fun logout(sessionId: String) {
+//        userRepository.findBySessionId(sessionId)?.let {
+//            it.sessionId = ""
+//            userRepository.save(it)
+//        }
+//    }
+
+

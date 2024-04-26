@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
+import java.time.LocalDate
 
 
 @Controller
@@ -54,9 +55,11 @@ class MatchController(
         @PathVariable("id") id: Long,
         @RequestParam("score1") score1: Int,
         @RequestParam("score2") score2: Int,
+        @RequestParam("date1") date1: LocalDate,
+        @RequestParam("image") image1: String,
         model: Model
     ): String {
-        val updatedMatch = matchService.updateMatch(id, score1, score2)
+        val updatedMatch = matchService.updateMatch(id, score1, score2, date1, image1)
         if (updatedMatch != null) {
             model.addAttribute("message", "Match updated successfully")
         } else {
@@ -67,7 +70,7 @@ class MatchController(
 
     @GetMapping("/false")
     fun getMatchesWithTermineFalse(model: Model): String {
-        val matchesfalse = matchService.getMatchWithTermineFalse()
+        val matchesfalse = matchService.getAll()
         model.addAttribute("matches", matchesfalse)
         println("matches")
         return "matches-false"

@@ -23,9 +23,11 @@ data class Matches(
     @Column(name = "score2")
     var score2: Int = 0,
     @Column(name = "termine")
-    val termine: Boolean = false,
+    var termine: Boolean = false,
     @Column(name = "date")
-    val date: LocalDate = LocalDate.now()
+    var date: LocalDate = LocalDate.now(),
+    @Column(name = "image")
+    var image: String = ""
 )
 
 @Repository
@@ -41,17 +43,16 @@ class MatchService(val matchRepository: MatchRepository) {
         matchRepository.save(matches)
     }
 
-    fun updateMatch(id: Long, score1: Int, score2: Int): Matches? {
+    fun updateMatch(id: Long, score1: Int, score2: Int, date: LocalDate, image: String): Matches? {
         val match = matchRepository.findById(id).orElse(null)
         if (match != null) {
             match.score1 = score1
             match.score2 = score2
+            match.image = image
+            match.date = date
+
             return matchRepository.save(match)
         }
         return null
-    }
-
-    fun getMatchWithTermineFalse(): List<Matches> {
-        return matchRepository.findByTermineFalse()
     }
 }
