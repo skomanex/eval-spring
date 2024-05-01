@@ -32,7 +32,7 @@ class MatchRestController(private val matchRepository: MatchRepository) {
     @PostMapping("/matchesJson")
     fun getAllMatches(@RequestBody passwordRequest: PasswordRequest): ResponseEntity<List<Matches>> {
         return if (passwordRequest.password == "Password") {
-            ResponseEntity.ok(matchRepository.findAll())
+            ResponseEntity.ok(matchRepository.findAllOrderByMatchDateDesc())
         } else {
             ResponseEntity.badRequest().build()
         }
