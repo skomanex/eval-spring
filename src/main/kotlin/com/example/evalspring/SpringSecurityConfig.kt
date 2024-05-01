@@ -29,6 +29,8 @@ class SpringSecurityConfig {
                 .requestMatchers("/newMatch").authenticated()
                 .requestMatchers("/matchesJson").permitAll()
                 .requestMatchers("/home").permitAll()
+                .requestMatchers("/accueil").authenticated()
+                .requestMatchers("/editMatch/**").authenticated()
                 .and()
                 .formLogin()
                 { form ->

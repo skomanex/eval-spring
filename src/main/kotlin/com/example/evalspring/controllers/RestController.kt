@@ -27,7 +27,7 @@ class MatchRestController(private val matchRepository: MatchRepository) {
     //http://localhost:8080/matchesJson
     @GetMapping("/matchesJson")
     fun getAllMatches(): List<Matches> {
-        return matchRepository.findAll()
+        return matchRepository.findAllOrderByMatchDateDesc()
     }
     @PostMapping("/matchesJson")
     fun getAllMatches(@RequestBody passwordRequest: PasswordRequest): ResponseEntity<List<Matches>> {
@@ -37,6 +37,4 @@ class MatchRestController(private val matchRepository: MatchRepository) {
             ResponseEntity.badRequest().build()
         }
     }
-
-
 }

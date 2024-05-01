@@ -2,6 +2,7 @@ package com.example.evalspring.model
 
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -32,7 +33,8 @@ data class Matches(
 
 @Repository
 interface MatchRepository : JpaRepository<Matches, Long> {
-    fun findByTermineFalse(): List<Matches>
+    @Query("SELECT m FROM Matches m ORDER BY m.date desc")
+    fun findAllOrderByMatchDateDesc(): List<Matches>
 }
 
 @Service
@@ -43,16 +45,15 @@ class MatchService(val matchRepository: MatchRepository) {
         matchRepository.save(matches)
     }
 
-    fun updateMatch(id: Long, score1: Int, score2: Int, date: LocalDate, image: String): Matches? {
+    fun updateMatch(id: Long, score1: Int, score2: Int, termineOuNon: Boolean): Matches? {
         val match = matchRepository.findById(id).orElse(null)
         if (match != null) {
+            match.termine = termineOuNon
             match.score1 = score1
             match.score2 = score2
-            match.image = image
-            match.date = date
-
             return matchRepository.save(match)
         }
         return null
     }
+
 }

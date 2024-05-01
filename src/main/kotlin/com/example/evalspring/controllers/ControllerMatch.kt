@@ -7,8 +7,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-import java.time.LocalDate
-
 
 @Controller
 class MatchController(
@@ -43,36 +41,39 @@ class MatchController(
         return "redirect:/matches"
     }
 
-    @GetMapping("/matches/{id}/edit")
-    fun editMatch(@PathVariable("id") id: Long, model: Model): String {
-        val match = matchService.matchRepository
-        model.addAttribute("match", match)
-        return "edit-match"
+    @GetMapping("/editMatch/{id}")
+    fun editMatchForm(@PathVariable("id") id: Long, model: Model): String {
+        val match = matchService.matchRepository.findById(id)
+            .orElseThrow { IllegalArgumentException("Match introuvable avec l'ID $id") }
+        model.addAttribute("matches", match)
+        return "/editMatch"
     }
 
-    @PostMapping("/matches/{id}/edit")
-    fun updateMatch(
+    @PostMapping("/editMatch/{id}")
+    fun editMatch(
         @PathVariable("id") id: Long,
         @RequestParam("score1") score1: Int,
         @RequestParam("score2") score2: Int,
-        @RequestParam("date1") date1: LocalDate,
-        @RequestParam("image") image1: String,
-        model: Model
+        @RequestParam("termine") termineOuNon: Boolean,
+        @ModelAttribute("matches") updatedMatch: Matches,
+        redirectAttributes: RedirectAttributes
     ): String {
-        val updatedMatch = matchService.updateMatch(id, score1, score2, date1, image1)
-        if (updatedMatch != null) {
-            model.addAttribute("message", "Match updated successfully")
+        if (matchService.updateMatch(id, score1, score2, termineOuNon) != null) {
+            redirectAttributes.addFlashAttribute("message", "Match mis à jour avec succès")
+            return "redirect:/matches"
         } else {
-            model.addAttribute("message", "Match not found")
+            redirectAttributes.addFlashAttribute("message", "Match non trouvé")
+            return "redirect:/matches"
         }
-        return "edit-match"
-    }
-
-    @GetMapping("/false")
-    fun getMatchesWithTermineFalse(model: Model): String {
-        val matchesfalse = matchService.getAll()
-        model.addAttribute("matches", matchesfalse)
-        println("matches")
-        return "matches-false"
     }
 }
+
+
+//        @GetMapping("/false")
+//        fun getMatchesWithTermineFalse(model: Model): String {
+//            val matchesfalse = matchService.getAll()
+//            model.addAttribute("matches", matchesfalse)
+//            println("matches")
+//            return "matches-false"
+//        }
+//    }
