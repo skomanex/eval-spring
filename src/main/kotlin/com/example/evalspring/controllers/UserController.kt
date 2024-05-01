@@ -16,9 +16,9 @@ class UserController(val userService: UserService) {
 
     //Affichage du formulaire
     //http://localhost:8080/user/login
-    @GetMapping("/login")
+    @GetMapping("/accueil")
     fun form(userbean: UserBean, session: HttpSession): String {
-        println("/login ${session.id}")
+        println("/accueil ${session.id}")
 
         val user = userService.findBySessionId(session.id)
         if (user != null) {
@@ -28,7 +28,7 @@ class UserController(val userService: UserService) {
 
 
         //Spring créera une instance de userBean qu'il mettra dans le model
-        return "login"
+        return "accueil"
     }
 
     //Traitement du formulaire

@@ -25,7 +25,8 @@
         <th>Score Équipe 1</th>
         <th>Score Équipe 2</th>
         <th>Match terminé </th>
-        <th>Image du match</th>
+        <th>Photo</th>
+        <th>Modifier un résultat</th>
     </tr>
     </thead>
     <tbody>
@@ -37,7 +38,8 @@
         <td th:text="${match.score1}"></td>
         <td th:text="${match.score2}"></td>
         <td th:text="${match.termine} ? 'Oui' : 'Non'"></td>
-        <td th:scr="${match.image}" alt="Image du match" style="width: 100px; height: auto"></td>
+        <td th:text="${match.image}"></td>
+        <td><a th:href="@{editMatch/{id}(id=${match.id})}" th:text="Editer">Modifier un résultat</a></td>
     </tr>
     </tbody>
 </table>

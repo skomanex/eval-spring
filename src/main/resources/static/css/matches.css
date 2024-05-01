@@ -17,3 +17,6 @@ td {
 td:nth-child(1) { /* Target the first column (Date) */
     width: 150px; /* Adjust width as needed */
 }
+h1 {
+    text-align: center;
+}
