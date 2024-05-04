@@ -3,9 +3,11 @@ package com.example.evalspring.model
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 @Entity
@@ -33,24 +35,37 @@ data class Matches(
 
 @Repository
 interface MatchRepository : JpaRepository<Matches, Long> {
-    @Query("SELECT m FROM Matches m ORDER BY m.date desc")
-    fun findAllOrderByMatchDateDesc(): List<Matches>
+    @Query("SELECT m FROM Matches m WHERE m.date >= :date ORDER BY m.date desc")
+    fun findMatchByDateDesc(@Param("date") date: LocalDate): List<Matches>
 }
 
 @Service
 class MatchService(val matchRepository: MatchRepository) {
     fun getAll(): List<Matches> = matchRepository.findAll()
 
-    fun save(matches: Matches) {
-        matchRepository.save(matches)
+    fun getAll7Days(): List<Matches> {
+        val now = LocalDate.now()
+        val sevenDaysAgo = now.minusDays(7)
+        return matchRepository.findMatchByDateDesc(sevenDaysAgo)
     }
 
-    fun updateMatch(id: Long, score1: Int, score2: Int, termineOuNon: Boolean): Matches? {
+    fun save(matches: Matches): Matches {
+        return matchRepository.save(matches)
+    }
+
+    fun updateMatch(id: Long, score1: Int, score2: Int): Matches? {
         val match = matchRepository.findById(id).orElse(null)
         if (match != null) {
-            match.termine = termineOuNon
             match.score1 = score1
             match.score2 = score2
+            return matchRepository.save(match)
+        }
+        return null
+    }
+    fun finishMatch(id: Long, termine: Boolean): Matches? {
+        val match = matchRepository.findById(id).orElse(null)
+        if (match != null) {
+            match.termine = termine
             return matchRepository.save(match)
         }
         return null

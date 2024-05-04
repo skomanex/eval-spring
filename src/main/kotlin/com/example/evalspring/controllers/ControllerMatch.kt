@@ -3,6 +3,10 @@ package com.example.evalspring.controllers
 import com.example.evalspring.model.MatchRepository
 import com.example.evalspring.model.MatchService
 import com.example.evalspring.model.Matches
+import org.springframework.messaging.handler.annotation.MessageMapping
+import org.springframework.messaging.handler.annotation.Payload
+import org.springframework.messaging.handler.annotation.SendTo
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
@@ -19,7 +23,7 @@ class MatchController(
 
     @GetMapping("/matches")
     fun getAllMatches(model: Model): String {
-        val matches = matchService.getAll()
+        val matches = matchService.getAll7Days()
         model.addAttribute("matches", matches)
         println("matches")
         for (matchData in matches) println(matchData)
@@ -54,11 +58,10 @@ class MatchController(
         @PathVariable("id") id: Long,
         @RequestParam("score1") score1: Int,
         @RequestParam("score2") score2: Int,
-        @RequestParam("termine") termineOuNon: Boolean,
         @ModelAttribute("matches") updatedMatch: Matches,
         redirectAttributes: RedirectAttributes
     ): String {
-        if (matchService.updateMatch(id, score1, score2, termineOuNon) != null) {
+        if (matchService.updateMatch(id, score1, score2) != null) {
             redirectAttributes.addFlashAttribute("message", "Match mis à jour avec succès")
             return "redirect:/matches"
         } else {
@@ -66,14 +69,44 @@ class MatchController(
             return "redirect:/matches"
         }
     }
+    @GetMapping("/termineMatch/{id}")
+    fun termineMatch(@PathVariable("id") id: Long, model: Model): String {
+        val match = matchService.matchRepository.findById(id)
+            .orElseThrow { IllegalArgumentException("Match introuvable avec l'ID $id") }
+        model.addAttribute("matches", match)
+        return "/termineMatch"
+    }
+    @PostMapping("/termineMatch/{id}")
+    fun termineMatch(
+        @PathVariable("id") id: Long,
+        @RequestParam("termine") termine: Boolean,
+        redirectAttributes: RedirectAttributes
+    ): String {
+        if (matchService.finishMatch(id, termine) != null) {
+            redirectAttributes.addFlashAttribute("message", "Match terminé avec succès")
+            return "redirect:/matches"
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Match non trouvé")
+            return "redirect:/matches"
+        }
+    }
+
 }
 
 
-//        @GetMapping("/false")
-//        fun getMatchesWithTermineFalse(model: Model): String {
-//            val matchesfalse = matchService.getAll()
-//            model.addAttribute("matches", matchesfalse)
-//            println("matches")
-//            return "matches-false"
-//        }
-//    }
+@Controller
+class MatchWebSocketController(val matchService: MatchService) {
+
+    @MessageMapping("/matchUpdate")
+    @SendTo("/topic/matches")
+    fun updateMatch(@Payload match: Matches, headers: SimpMessageHeaderAccessor): Matches {
+        return match
+    }
+
+    @MessageMapping("/newMatch")
+    @SendTo("/topic/matches")
+    fun newMatch(@Payload matches: Matches, headers: SimpMessageHeaderAccessor): Matches {
+        // Save the new match in the service
+        return matchService.save(matches)
+    }
+}

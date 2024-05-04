@@ -19,7 +19,6 @@
     <thead>
     <tr>
         <th>Date du Match</th>
-        <th>Numéro Interne du Match</th>
         <th>Équipe 1</th>
         <th>Équipe 2</th>
         <th>Score Équipe 1</th>
@@ -27,12 +26,12 @@
         <th>Match terminé </th>
         <th>Photo</th>
         <th>Modifier un résultat</th>
+        <th>Indiquer qu'un match est terminé</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="match : ${matches}">
-        <td th:text="${match.date}"></td>
-        <td th:text="${match.id}"></td>
+        <td th:text="${#temporals.format(match.date, 'dd MMMM yyyy')}"></td>
         <td th:text="${match.team1}"></td>
         <td th:text="${match.team2}"></td>
         <td th:text="${match.score1}"></td>
@@ -40,6 +39,7 @@
         <td th:text="${match.termine} ? 'Oui' : 'Non'"></td>
         <td th:text="${match.image}"></td>
         <td><a th:href="@{editMatch/{id}(id=${match.id})}" th:text="Editer">Modifier un résultat</a></td>
+        <td><a th:href="@{termineMatch/{id}(id=${match.id})}" th:text="Modifier">Indiquer qu'un match est terminé</a></td>
     </tr>
     </tbody>
 </table>

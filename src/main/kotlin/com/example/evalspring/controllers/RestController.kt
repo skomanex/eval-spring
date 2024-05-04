@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
+import java.util.*
 
 data class PasswordRequest(val password: String)
 
@@ -27,12 +29,12 @@ class MatchRestController(private val matchRepository: MatchRepository) {
     //http://localhost:8080/matchesJson
     @GetMapping("/matchesJson")
     fun getAllMatches(): List<Matches> {
-        return matchRepository.findAllOrderByMatchDateDesc()
+        return matchRepository.findAll()
     }
     @PostMapping("/matchesJson")
     fun getAllMatches(@RequestBody passwordRequest: PasswordRequest): ResponseEntity<List<Matches>> {
         return if (passwordRequest.password == "Password") {
-            ResponseEntity.ok(matchRepository.findAllOrderByMatchDateDesc())
+            ResponseEntity.ok(matchRepository.findAll())
         } else {
             ResponseEntity.badRequest().build()
         }

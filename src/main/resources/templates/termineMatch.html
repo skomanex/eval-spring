@@ -10,13 +10,13 @@
 <body>
 
 <h1>Modifier le résultat d'un match</h1>
-<form th:action="@{/editMatch/{id}(id=${matches.id})}" th:object="${matches}" method="post">
+<form th:action="@{/termineMatch/{id}(id=${matches.id})}" th:object="${matches}" method="post">
     <p>Nom de l'équipe 1: <input th:field="*{team1}" type="text" readonly/></p>
     <p>Nom de l'équipe 2: <input th:field="*{team2}" type="text" readonly/></p>
-    <p>Score de l'équipe 1: <input th:field="*{score1}" type="number" /></p>
-    <p>Score de l'équipe 2: <input th:field="*{score2}" type="number" /></p>
+    <p>Match Termine: <input th:field="*{termine}" type="checkbox" /></p>
 
-    <input type="submit" value="Mettre à jour le résultat">
+
+    <input type="submit" value="Match Terminé">
 </form>
 </body>
 </html>
