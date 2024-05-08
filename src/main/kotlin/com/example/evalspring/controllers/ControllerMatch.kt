@@ -22,8 +22,18 @@ class MatchController(
     //http://localhost:8080/matches
 
     @GetMapping("/matches")
-    fun getAllMatches(model: Model): String {
-        val matches = matchService.getAll7Days()
+    fun getAllMatches(@RequestParam(required = false) status: String?, model: Model): String {
+        val matches = when (status) {
+            "en-cours" -> {
+                matchService.getOngoingMatches()
+            }
+            "termine" -> {
+                matchService.getFinishedMatches()
+            }
+            else -> {
+                matchService.getAll7Days()
+            }
+        }
         model.addAttribute("matches", matches)
         println("matches")
         for (matchData in matches) println(matchData)

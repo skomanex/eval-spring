@@ -8,14 +8,28 @@
     <title>matches</title>
     <link href="/css/matches.css" rel="stylesheet"/>
 </head>
+
+<script>
+    function refreshPage(status){
+        let url = "/matches";
+        if (status === "en-cours") {
+            url += "?status=en-cours";
+        } else if (status === "termine") {
+            url += "?status=termine";
+        }
+        // Recharger la page avec l'URL modifiée
+        window.location.href = url;
+    }
+</script>
+
 <body>
 
 <div class="button-container">
-    <button class="status-button" id="Match en cours">En cours</button>
-    <button class="status-button" id="Match terminé">Terminé</button>
+    <button class="status-button" onClick="refreshPage('en-cours')">Matches en cours</button>
+    <button class="status-button" onClick="refreshPage('termine')">Matches terminés</button>
 </div>
 <h1>Résultats des matchs</h1>
-<table>
+<table id="matches-table">
     <thead>
     <tr>
         <th>Date du Match</th>
@@ -30,7 +44,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="match : ${matches}">
+    <tr th:each="match : ${matches}" class="match-row" th:class="${match.termine} ? 'termine' : 'en-cours'">
         <td th:text="${#temporals.format(match.date, 'dd MMMM yyyy')}"></td>
         <td th:text="${match.team1}"></td>
         <td th:text="${match.team2}"></td>
