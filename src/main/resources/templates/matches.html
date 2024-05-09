@@ -10,7 +10,7 @@
 </head>
 
 <script>
-    function refreshPage(status){
+    function refreshPage(status) {
         let url = "/matches";
         if (status === "en-cours") {
             url += "?status=en-cours";
@@ -39,7 +39,7 @@
         <th>Équipe 2</th>
         <th>Score Équipe 1</th>
         <th>Score Équipe 2</th>
-        <th>Match terminé </th>
+        <th>Match terminé</th>
         <th>Photo</th>
         <th>Modifier un résultat</th>
         <th>Indiquer que le match est terminé</th>
@@ -53,10 +53,14 @@
         <td th:text="${match.score1}"></td>
         <td th:text="${match.score2}"></td>
         <td th:text="${match.termine} ? 'Oui' : 'Non'"></td>
-        <td th:text="${match.image}"></td>
+        <td>
+            <img th:src="${match.image != null and not #strings.isEmpty(match.image)} ? ${match.image} : 'https://st.depositphotos.com/2934765/53192/v/450/depositphotos_531920820-stock-illustration-photo-available-vector-icon-default.jpg'"
+                 alt="Photo du match" style="max-width: 100px; max-height: 100px;">
+        </td>
         <td><a th:href="@{editMatch/{id}(id=${match.id})}" th:text="Editer">Modifier un résultat</a></td>
         <td>
-            <a th:if="${!match.termine}" th:href="@{termineMatch/{id}(id=${match.id})}" th:text="Cloturer">Clore un match</a>
+            <a th:if="${!match.termine}" th:href="@{termineMatch/{id}(id=${match.id})}" th:text="Cloturer">Clore un
+                match</a>
         </td>
     </tr>
     </tbody>

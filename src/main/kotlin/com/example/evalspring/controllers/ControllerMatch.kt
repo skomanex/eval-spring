@@ -68,10 +68,11 @@ class MatchController(
         @PathVariable("id") id: Long,
         @RequestParam("score1") score1: Int,
         @RequestParam("score2") score2: Int,
+        @RequestParam("image") image1: String,
         @ModelAttribute("matches") updatedMatch: Matches,
         redirectAttributes: RedirectAttributes
     ): String {
-        if (matchService.updateMatch(id, score1, score2) != null) {
+        if (matchService.updateMatch(id, score1, score2, image1) != null) {
             redirectAttributes.addFlashAttribute("message", "Match mis à jour avec succès")
             return "redirect:/matches"
         } else {
@@ -112,13 +113,13 @@ class MatchController(
     @SendTo("/topic/match.update")
     fun updateMatch(@Payload match: Matches, headers: SimpMessageHeaderAccessor): Any {
         val id = match.id ?: throw RuntimeException("L'ID du match ne peut pas être nul")
-        val existingMatch = matchService.updateMatch(id, match.score1, match.score2)
+        val existingMatch = matchService.updateMatch(id, match.score1, match.score2, match.image)
         if (existingMatch != null) {
-            // Update the existing match with the new properties
             existingMatch.team1 = match.team1
             existingMatch.team2 = match.team2
             existingMatch.score1 = match.score1
             existingMatch.score2 = match.score2
+            existingMatch.image = match.image
             return matchService.save(existingMatch)
         } else {
             throw RuntimeException("Match not found")

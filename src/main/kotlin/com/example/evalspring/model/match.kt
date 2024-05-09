@@ -53,11 +53,12 @@ class MatchService(val matchRepository: MatchRepository) {
         return matchRepository.save(matches)
     }
 
-    fun updateMatch(id: Long, score1: Int, score2: Int): Matches? {
+    fun updateMatch(id: Long, score1: Int, score2: Int, image1: String): Matches? {
         val match = matchRepository.findById(id).orElse(null)
         if (match != null) {
             match.score1 = score1
             match.score2 = score2
+            match.image = image1
             return matchRepository.save(match)
         }
         return null
