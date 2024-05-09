@@ -7,8 +7,6 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
 
 @Entity
 @Table(name = "Matches")
@@ -18,9 +16,9 @@ data class Matches(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
     @Column(name = "team1")
-    val team1: String = "",
+    var team1: String = "",
     @Column(name = "team2")
-    val team2: String = "",
+    var team2: String = "",
     @Column(name = "score1")
     var score1: Int = 0,
     @Column(name = "score2")
@@ -37,6 +35,8 @@ data class Matches(
 interface MatchRepository : JpaRepository<Matches, Long> {
     @Query("SELECT m FROM Matches m WHERE m.date >= :date ORDER BY m.date desc")
     fun findMatchByDateDesc(@Param("date") date: LocalDate): List<Matches>
+    @Query("SELECT m from Matches m where m.termine = :status ORDER BY m.date desc")
+    fun findMatchByTermine(@Param("status") status: Boolean): List<Matches>
 }
 
 @Service
@@ -69,5 +69,12 @@ class MatchService(val matchRepository: MatchRepository) {
             return matchRepository.save(match)
         }
         return null
+    }
+    fun getOngoingMatches(): List<Matches> {
+        return matchRepository.findMatchByTermine(false)
+    }
+
+    fun getFinishedMatches(): List<Matches> {
+        return matchRepository.findMatchByTermine(true)
     }
 }

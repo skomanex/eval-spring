@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <title>Match WebSocket</title>
+    <script src="https://cdn.jsdelivr.net/sockjs/latest/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:inline="javascript">
+        var stompClient = null;
+
+        function connect() {
+            var socket = new SockJS('/match.update');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/matches', function (messageOutput) {
+                    showMatches(JSON.parse(messageOutput.body));
+                });
+            });
+        }
+
+        function updateMatch() {
+            var id = document.getElementById('id');
+            var team1 = document.getElementById('team1');
+            var team2 = document.getElementById('team2');
+            var score1 = document.getElementById('score1');
+            var score2 = document.getElementById('score2');
+            var matches = {
+                id: id.value,
+                team1: team1.value,
+                team2: team2.value,
+                score1: score1.value,
+                score2: score2.value
+            };
+            stompClient.send("/matches.update", {}, JSON.stringify(matches));
+        }
+
+        function showMatches(matches) {
+            var matchArea = document.getElementById('matchArea');
+            matchArea.innerHTML = '';
+            for (var i = 0; i < matches.length; i++) {
+                var matchElement = document.createElement('div');
+                matchElement.appendChild(document.createTextNode(matches[i].team1 + " - " + matches[i].team2 + " : " + matches[i].score1 + "-" + matches[i].score2));
+                matchArea.appendChild(matchElement);
+            }
+        }
+
+        connect();
+        /*]]>*/
+    </script>
+</head>
+<body>
+        <div id="matchArea"></div>
+        <input id="idInput" type="text"/>
+        <input id="team1" type="text" placeholder="Nom de l'equipe 1"/>
+        <input id="team2" type="text" placeholder="Nom de l'equipe 2"/>
+        <input id="score1" type="number" placeholder="Score de l'equipe 1"/>
+        <input id="score2" type="number" placeholder="Score de l'equipe 2"/>
+        <button onclick="updateMatch()">Mettre a jour</button>
+</body>
+</html>

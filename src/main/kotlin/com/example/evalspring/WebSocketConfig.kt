@@ -6,22 +6,20 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 
-const val CHANEL_NAME: String = "/ws/myChanel"
-
 @Configuration //Création d'un fichier de configuration pour les WebSocket
 @EnableWebSocketMessageBroker
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
     // Le point de terminaison pour les connexions WebSocket (handshake)
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/ws").withSockJS()
+        registry.addEndpoint("/match.update").withSockJS()
     }
 
     // Configurer les channels (broker) de messages que les clients viendront écouter
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
         //Il peut y avoir plusieurs channels
-        registry.enableSimpleBroker(CHANEL_NAME)
+        registry.enableSimpleBroker("/topic")
         //Définir les préfixes des destinations
-        registry.setApplicationDestinationPrefixes("/ws")
+        registry.setApplicationDestinationPrefixes("/app")
     }
 }

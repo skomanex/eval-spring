@@ -1,14 +1,13 @@
 package com.example.evalspring.controllers
 
-import com.example.evalspring.model.MatchRepository
+import com.example.evalspring.model.MatchService
 import com.example.evalspring.model.Matches
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDate
-import java.util.*
 
 data class PasswordRequest(val password: String)
 
@@ -23,18 +22,25 @@ class RestController {
         return "Page test pour evaluation groupe VOLLAND/PIUZZI/GOMEZ"
     }
 }
+
 @RestController
-class MatchRestController(private val matchRepository: MatchRepository) {
+
+class MatchRestController {
+    @Autowired
+    private lateinit var matchService: MatchService
 
     //http://localhost:8080/matchesJson
     @GetMapping("/matchesJson")
-    fun getAllMatches(): List<Matches> {
-        return matchRepository.findAll()
+    fun getMatchesFromLastSevenDays(): List<Matches> {
+        return matchService.getAll7Days()
     }
+
     @PostMapping("/matchesJson")
-    fun getAllMatches(@RequestBody passwordRequest: PasswordRequest): ResponseEntity<List<Matches>> {
+
+    fun getMatchesFromLastSevenDays(@RequestBody passwordRequest: PasswordRequest): ResponseEntity<List<Matches>> {
         return if (passwordRequest.password == "Password") {
-            ResponseEntity.ok(matchRepository.findAll())
+
+            ResponseEntity.ok(matchService.getAll7Days())
         } else {
             ResponseEntity.badRequest().build()
         }

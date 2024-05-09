@@ -22,8 +22,18 @@ class MatchController(
     //http://localhost:8080/matches
 
     @GetMapping("/matches")
-    fun getAllMatches(model: Model): String {
-        val matches = matchService.getAll7Days()
+    fun getAllMatches(@RequestParam(required = false) status: String?, model: Model): String {
+        val matches = when (status) {
+            "en-cours" -> {
+                matchService.getOngoingMatches()
+            }
+            "termine" -> {
+                matchService.getFinishedMatches()
+            }
+            else -> {
+                matchService.getAll()
+            }
+        }
         model.addAttribute("matches", matches)
         println("matches")
         for (matchData in matches) println(matchData)
@@ -69,6 +79,7 @@ class MatchController(
             return "redirect:/matches"
         }
     }
+
     @GetMapping("/termineMatch/{id}")
     fun termineMatch(@PathVariable("id") id: Long, model: Model): String {
         val match = matchService.matchRepository.findById(id)
@@ -76,12 +87,18 @@ class MatchController(
         model.addAttribute("matches", match)
         return "/termineMatch"
     }
+
     @PostMapping("/termineMatch/{id}")
     fun termineMatch(
         @PathVariable("id") id: Long,
         @RequestParam("termine") termine: Boolean,
         redirectAttributes: RedirectAttributes
     ): String {
+        if (!termine) {
+            redirectAttributes.addFlashAttribute("message", "Un match non terminé ne peut pas être réinitialisé")
+            return "redirect:/matches"
+        }
+
         if (matchService.finishMatch(id, termine) != null) {
             redirectAttributes.addFlashAttribute("message", "Match terminé avec succès")
             return "redirect:/matches"
@@ -91,20 +108,25 @@ class MatchController(
         }
     }
 
-}
-
-
-@Controller
-class MatchWebSocketController(val matchService: MatchService) {
-
-    @MessageMapping("/matchUpdate")
-    @SendTo("/topic/matches")
-    fun updateMatch(@Payload match: Matches, headers: SimpMessageHeaderAccessor): Matches {
-        return match
+    @MessageMapping("/match.update")
+    @SendTo("/topic/match.update")
+    fun updateMatch(@Payload match: Matches, headers: SimpMessageHeaderAccessor): Any {
+        val id = match.id ?: throw RuntimeException("L'ID du match ne peut pas être nul")
+        val existingMatch = matchService.updateMatch(id, match.score1, match.score2)
+        if (existingMatch != null) {
+            // Update the existing match with the new properties
+            existingMatch.team1 = match.team1
+            existingMatch.team2 = match.team2
+            existingMatch.score1 = match.score1
+            existingMatch.score2 = match.score2
+            return matchService.save(existingMatch)
+        } else {
+            throw RuntimeException("Match not found")
+        }
     }
 
-    @MessageMapping("/newMatch")
-    @SendTo("/topic/matches")
+    @MessageMapping("/matchNew2")
+    @SendTo("/matches/new")
     fun newMatch(@Payload matches: Matches, headers: SimpMessageHeaderAccessor): Matches {
         // Save the new match in the service
         return matchService.save(matches)
