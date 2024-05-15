@@ -29,19 +29,20 @@ class SpringSecurityConfig {
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/newMatch").authenticated()
                 .requestMatchers("/matchesJson").permitAll()
+                .requestMatchers("/matchesJsonPassword").permitAll()
                 .requestMatchers("/accueil").permitAll()
                 .requestMatchers("/editMatch/**").authenticated()
                 .requestMatchers("/termineMatch/**").authenticated()
-                .requestMatchers("/matchUpdate2/**").permitAll()
-                .requestMatchers("/newMatch2/**").permitAll()
                 .requestMatchers("/ws/**").permitAll()
-
+                .requestMatchers("/web.html").permitAll()
+                .requestMatchers("/topic/**").permitAll()
                 .and()
                 .formLogin()
                 { form ->
                     form
                         .defaultSuccessUrl("/newMatch")
                 }
+            http.csrf().ignoringRequestMatchers("/matchesJsonPassword")
         }
         return http.build()
     }

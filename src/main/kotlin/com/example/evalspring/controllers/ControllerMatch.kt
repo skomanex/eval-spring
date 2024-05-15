@@ -3,14 +3,21 @@ package com.example.evalspring.controllers
 import com.example.evalspring.model.MatchRepository
 import com.example.evalspring.model.MatchService
 import com.example.evalspring.model.Matches
+import com.fasterxml.jackson.databind.deser.DataFormatReaders
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.event.EventListener
 import org.springframework.messaging.handler.annotation.MessageMapping
-import org.springframework.messaging.handler.annotation.Payload
-import org.springframework.messaging.handler.annotation.SendTo
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor
+import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.messaging.simp.config.MessageBrokerRegistry
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
+import org.springframework.web.socket.messaging.SessionSubscribeEvent
 
 @Controller
 class MatchController(
@@ -27,9 +34,11 @@ class MatchController(
             "en-cours" -> {
                 matchService.getOngoingMatches()
             }
+
             "termine" -> {
                 matchService.getFinishedMatches()
             }
+
             else -> {
                 matchService.getAll()
             }
@@ -109,27 +118,23 @@ class MatchController(
         }
     }
 
-    @MessageMapping("/match.update")
-    @SendTo("/topic/match.update")
-    fun updateMatch(@Payload match: Matches, headers: SimpMessageHeaderAccessor): Any {
-        val id = match.id ?: throw RuntimeException("L'ID du match ne peut pas être nul")
-        val existingMatch = matchService.updateMatch(id, match.score1, match.score2, match.image)
-        if (existingMatch != null) {
-            existingMatch.team1 = match.team1
-            existingMatch.team2 = match.team2
-            existingMatch.score1 = match.score1
-            existingMatch.score2 = match.score2
-            existingMatch.image = match.image
-            return matchService.save(existingMatch)
-        } else {
-            throw RuntimeException("Match not found")
-        }
-    }
+    @Controller
+    @RequestMapping("/ws") // Chemin de base pour toutes les méthodes de ce controleur
+    class WebSocketController(private val messagingTemplate: SimpMessagingTemplate) {
+        private val listMatches = ArrayList<Matches>()
 
-    @MessageMapping("/matchNew2")
-    @SendTo("/matches/new")
-    fun newMatch(@Payload matches: Matches, headers: SimpMessageHeaderAccessor): Matches {
-        // Save the new match in the service
-        return matchService.save(matches)
+        @MessageMapping("/addMatch")
+        fun addMatch(match: Matches) {
+            println("/topic/addMatches $match")
+            listMatches.add(match)
+            messagingTemplate.convertAndSend("/topic/addMatches")
+        }
+        @EventListener
+            fun ecouteWebSocket(event: SessionSubscribeEvent){
+            val headerAccessor = StompHeaderAccessor.wrap(event.message)
+            if("/topic" == headerAccessor.destination){
+                messagingTemplate.convertAndSend("/topic/addMatches")
+            }
+        }
     }
 }

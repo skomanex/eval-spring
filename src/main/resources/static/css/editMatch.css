@@ -1,0 +1,78 @@
+/* Styles pour le formulaire */
+form {
+    width: 400px;
+    margin: 0 auto;
+    padding: 30px;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+/* Styles pour les champs du formulaire */
+form input[type="text"],
+form input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+    font-size: 14px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Effet au focus sur les champs du formulaire */
+form input[type="text"]:focus,
+form input[type="number"]:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/* Style pour le bouton de soumission */
+form input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+/* Effet au survol du bouton de soumission */
+form input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Style pour le titre du formulaire */
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 28px;
+    font-weight: 300;
+}
+
+/* Styles pour les noms d'équipe */
+form input[readonly] {
+    background-color: #f9f9f9;
+    color: #333;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Styles pour les messages d'erreur */
+form div.error {
+    color: #ff0000;
+    font-size: 12px;
+    margin-top: 5px;
+}
+/* Styles pour la case de saisie de l'image */
+form input[name="image"] {
+    height: 80px; /* Ajustez cette valeur en fonction de vos besoins */
+    font-size: 16px;
+    padding-top: 10px; /* Ajustez cette valeur en fonction de la hauteur de la case de saisie */
+    box-sizing: border-box;
+}
