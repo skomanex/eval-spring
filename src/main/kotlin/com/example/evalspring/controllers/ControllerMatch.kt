@@ -3,20 +3,15 @@ package com.example.evalspring.controllers
 import com.example.evalspring.model.MatchRepository
 import com.example.evalspring.model.MatchService
 import com.example.evalspring.model.Matches
-import com.fasterxml.jackson.databind.deser.DataFormatReaders
-import org.springframework.context.annotation.Configuration
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.event.EventListener
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessagingTemplate
-import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 import org.springframework.web.socket.messaging.SessionSubscribeEvent
 
 @Controller
@@ -121,20 +116,23 @@ class MatchController(
     @Controller
     @RequestMapping("/ws") // Chemin de base pour toutes les méthodes de ce controleur
     class WebSocketController(private val messagingTemplate: SimpMessagingTemplate) {
-        private val listMatches = ArrayList<Matches>()
 
-        @MessageMapping("/addMatch")
-        fun addMatch(match: Matches) {
-            println("/topic/addMatches $match")
-            listMatches.add(match)
-            messagingTemplate.convertAndSend("/topic/addMatches")
-        }
-        @EventListener
-            fun ecouteWebSocket(event: SessionSubscribeEvent){
-            val headerAccessor = StompHeaderAccessor.wrap(event.message)
-            if("/topic" == headerAccessor.destination){
-                messagingTemplate.convertAndSend("/topic/addMatches")
-            }
-        }
+    @Autowired
+    lateinit var matchService: MatchService
+
+    @MessageMapping("/addMatch")
+    fun addMatch(match: Matches) {
+        println("/topic/addMatches $match")
+        matchService.save(match)
+            messagingTemplate.convertAndSend("/topic/addMatches", match)
+    }
+
+//        @EventListener
+//        fun ecouteWebSocket(event: SessionSubscribeEvent) {
+//            val headerAccessor = StompHeaderAccessor.wrap(event.message)
+//            if ("/topic" == headerAccessor.destination) {
+//                messagingTemplate.convertAndSend("/topic/addMatches")
+//            }
+//        }
     }
 }

@@ -20,8 +20,17 @@
             <form id="addMatchForm" class="form-inline">
                 <div class="form-group">
                     <label for="date">Date du match</label>
-                    <input type="date" id="date" class="form-control" placeholder="Qu'elle est la date du match :">
+                    <input type="date" id="date" name="date" class="form-control" placeholder="Qu'elle est la date du match :" required onchange="formatDate(this)">
                 </div>
+                <script>
+                    function formatDate(input) {
+                        let date = new Date(input.value);
+                        let year = date.getFullYear();
+                        let month = (date.getMonth() + 1).toString().padStart(2, '0');
+                        let day = date.getDate().toString().padStart(2, '0');
+                        input.value = `${year}-${month}-${day}`;
+                    }
+                </script>
                 <div class="form-group">
                     <label for="team1">Nom de l'equipe 1</label>
                     <input type="text" id="team1" class="form-control" placeholder="Quel est le nom de l'equipe 1 :">

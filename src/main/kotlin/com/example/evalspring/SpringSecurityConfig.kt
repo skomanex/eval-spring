@@ -36,6 +36,7 @@ class SpringSecurityConfig {
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/web.html").permitAll()
                 .requestMatchers("/topic/**").permitAll()
+                .requestMatchers("/topic/addMatches").permitAll()
                 .and()
                 .formLogin()
                 { form ->
