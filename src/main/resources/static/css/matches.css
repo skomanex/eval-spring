@@ -23,3 +23,8 @@ td:nth-child(7) {
 h1 {
     text-align: center;
 }
+.button-container2 {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}

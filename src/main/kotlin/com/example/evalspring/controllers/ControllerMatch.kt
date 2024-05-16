@@ -4,15 +4,12 @@ import com.example.evalspring.model.MatchRepository
 import com.example.evalspring.model.MatchService
 import com.example.evalspring.model.Matches
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.event.EventListener
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessagingTemplate
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
-import org.springframework.web.socket.messaging.SessionSubscribeEvent
 
 @Controller
 class MatchController(
