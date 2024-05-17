@@ -14,14 +14,17 @@ import org.springframework.web.servlet.view.RedirectView
 @Controller
 @RequestMapping("/user")
 class UserController(val userService: UserService) {
+
     @GetMapping("/")
     fun home(): RedirectView {
         return RedirectView("/user/accueil")
     }
+
     //Affichage du formulaire
     //http://localhost:8080/user/login
+
     @GetMapping("/accueil")
-    fun form(userbean: UserBean, session: HttpSession): String {
+    fun showLoginForm(userbean: UserBean, session: HttpSession): String {
         println("/accueil ${session.id}")
 
         val user = userService.findBySessionId(session.id)
@@ -29,7 +32,6 @@ class UserController(val userService: UserService) {
             //déja connecté je redirige
             return "redirect:/newMatch"
         }
-
 
         //Spring créera une instance de userBean qu'il mettra dans le model
         return "accueil"
@@ -45,7 +47,6 @@ class UserController(val userService: UserService) {
         println("/loginSubmit :  : $userBean")
 
         try {
-
             userService.insertOrCheck(userBean, session.id)
 
             //Cas qui marche
@@ -67,7 +68,6 @@ class UserController(val userService: UserService) {
     fun newMatch(model: Model, session: HttpSession, redirect: RedirectAttributes): String {
 
         try {
-
             val user = userService.findBySessionId(session.id)
             if (user == null) {
                 throw Exception("Veuillez vous reconnecter")
@@ -86,13 +86,3 @@ class UserController(val userService: UserService) {
         }
     }
 }
-//    @GetMapping("/logout") //Affiche la page résultat
-//    fun logout(httpSession: HttpSession): String {
-//
-//        //Spring regénerera un nouveau sessionId au prochain appel
-//        httpSession.invalidate()
-//
-//        return "redirect:/user/login"
-//    }
-
-

@@ -3,9 +3,9 @@ package com.example.evalspring.controllers
 import com.example.evalspring.model.MatchRepository
 import com.example.evalspring.model.MatchService
 import com.example.evalspring.model.Matches
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
-import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.messaging.handler.annotation.Payload
+import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
@@ -111,18 +111,20 @@ class MatchController(
     }
 
     @Controller
-    @RequestMapping("/ws") // Chemin de base pour toutes les méthodes de ce controleur
-    class WebSocketController(private val messagingTemplate: SimpMessagingTemplate) {
+    @MessageMapping("/ws")
+    class MatchWebSocketController(private val matchService: MatchService) {
 
-    @Autowired
-    lateinit var matchService: MatchService
+        @MessageMapping("/addmatch")
+        @SendTo("/topic/newMatch")
+        fun sendMatch(@Payload matches: Matches): Matches {
+            println(matches)
+            matchService.save(matches)
+            println("Matches sauvegardés : $matches")
 
-    @MessageMapping("/addMatch")
-    fun addMatch(match: Matches) {
-        println("/topic/addMatches $match")
-        matchService.save(match)
-            messagingTemplate.convertAndSend("/topic/addMatches", match)
+            return matches
+        }
     }
+}
 
 //        @EventListener
 //        fun ecouteWebSocket(event: SessionSubscribeEvent) {
@@ -131,5 +133,3 @@ class MatchController(
 //                messagingTemplate.convertAndSend("/topic/addMatches")
 //            }
 //        }
-    }
-}

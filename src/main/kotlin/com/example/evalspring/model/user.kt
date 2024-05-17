@@ -17,7 +17,8 @@ data class UserBean(
     var id: Long? = null,
     var login: String = "",
     var password: String = "",
-    var sessionId: String = ""
+    var sessionId: String = "",
+    var roles: String = ""
 )
 
 @Repository                       //<Bean, Typage Id>
@@ -31,7 +32,6 @@ interface UserRepository : JpaRepository<UserBean, Long> {
 @Service
 class UserService(val userRepository: UserRepository) {
     //Jeu de donnée
-    private val list = ArrayList<UserBean>()
 
     //Sauvegarde
     fun save(user: UserBean) {
@@ -50,22 +50,24 @@ class UserService(val userRepository: UserRepository) {
             throw Exception("Password manquant")
         }
 
-        val userBdd: UserBean? = findByLogin(userBean.login)
+        val userBdd= userRepository.findByLogin(userBean.login)
 
         if (userBdd != null && userBdd.password != userBean.password) {
             //password !ok
             throw Exception("Mot de passe incorrect")
         }
 
-//        if (userBdd != null) {
-//
-//            //userBdd a son id ce qu'userBean n'a pas car il vient du post
-//            userBdd.sessionId = sessionId
-//            userRepository.save(userBdd)
-//        } else {
-//            userBean.sessionId = sessionId
-//            userRepository.save(userBean)
-//        }
+        if (userBdd != null) {
+
+            //userBdd a son id ce qu'userBean n'a pas car il vient du post
+            userBdd.sessionId = sessionId
+            userRepository.save(userBdd)
+        } else {
+            userBean.apply {
+                this.sessionId = sessionId
+            }
+            userRepository.save(userBean)
+        }
     }
 
     //Retourne la liste

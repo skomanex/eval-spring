@@ -3,6 +3,7 @@ package com.example.evalspring
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.core.userdetails.User
@@ -14,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(jsr250Enabled = true)
 class SpringSecurityConfig {
     @Bean
     fun securityFilterChain(http: HttpSecurity, formContentFilter: OrderedFormContentFilter): SecurityFilterChain {
@@ -25,6 +27,7 @@ class SpringSecurityConfig {
                 .requestMatchers("/user/**").permitAll()
                 .requestMatchers("/admin/**").permitAll()
                 .requestMatchers("/matches").permitAll()
+                .requestMatchers("/error/**").permitAll()
                 .requestMatchers("/matches/**").permitAll()
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/newMatch").authenticated()

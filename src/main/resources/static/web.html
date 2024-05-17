@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Match Display (WebSocket)</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <div id="main-content" class="container">
@@ -9,89 +12,103 @@
         <div class="col-md-6">
             <form id="connectForm" class="form-inline">
                 <div class="form-group">
-                    <label for="connectBtn">WebSocket connection:</label>
-                    <button id="connectBtn" class="btn btn-default" type="button">Connect</button>
+                    <label for="connectBtn">Connexion WebSocket :</label>
+                    <button id="connectBtn" class="btn btn-primary" type="button">Connecter</button>
                 </div>
             </form>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <form id="addMatchForm" class="form-inline">
+            <form id="addMatchForm">
                 <div class="form-group">
-                    <label for="date">Date du match</label>
-                    <input type="date" id="date" name="date" class="form-control" placeholder="Qu'elle est la date du match :" required onchange="formatDate(this)">
-                </div>
-                <script>
-                    function formatDate(input) {
-                        let date = new Date(input.value);
-                        let year = date.getFullYear();
-                        let month = (date.getMonth() + 1).toString().padStart(2, '0');
-                        let day = date.getDate().toString().padStart(2, '0');
-                        input.value = `${year}-${month}-${day}`;
-                    }
-                </script>
-                <div class="form-group">
-                    <label for="team1">Nom de l'equipe 1</label>
-                    <input type="text" id="team1" class="form-control" placeholder="Quel est le nom de l'equipe 1 :">
+                    <label for="date">Date du match :</label>
+                    <input type="date" id="date" name="date" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="team2">Nom de l'equipe 2</label>
-                    <input type="text" id="team2" class="form-control" placeholder="Quel est le nom de l'equipe 2 :">
+                    <label for="team1">Nom de l'équipe 1 :</label>
+                    <input type="text" id="team1" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="score1">Score de l'equipe 1</label>
-                    <input type="text" id="score1" class="form-control" placeholder="Quel est le score de l'equipe 1 :">
+                    <label for="team2">Nom de l'équipe 2 :</label>
+                    <input type="text" id="team2" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="score2">Score de l'equipe 2</label>
-                    <input type="text" id="score2" class="form-control" placeholder="Quel est le score de l'equipe 2 :">
+                    <label for="score1">Score de l'équipe 1 :</label>
+                    <input type="number" id="score1" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="termine">Match termine</label>
-                    <input type="checkbox" id="termine" class="form-control"
-                           placeholder="Est ce que le match est termine :">
+                    <label for="score2">Score de l'équipe 2 :</label>
+                    <input type="number" id="score2" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="image">Image du match</label>
-                    <input type="text" id="image" class="form-control" placeholder="Donne un lien d'une image :">
+                    <label for="termine">Match terminé :</label>
+                    <input type="checkbox" id="termine" class="form-control">
                 </div>
-
-                <button id="addMatchBtn" class="btn btn-default" type="button">Ajouter un resultat</button>
+                <div class="form-group">
+                    <label for="image">Image du match :</label>
+                    <input type="text" id="image" class="form-control">
+                </div>
+                <button id="addMatchBtn" class="btn btn-success" type="button">Ajouter un résultat</button>
             </form>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/sockjs/latest/sockjs.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
     let stompClient;
-
     function connect() {
         stompClient = Stomp.over(new SockJS("/ws/websocket"));
         stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/addMatches', function (addMatch) {
-                console.log('Received: ' + addMatch.body);
+            console.log('Connecté : ' + frame);
+            stompClient.subscribe('/topic/addMatches', function (message) {
+                console.log('Reçu : ' + message.body);
+                // Traitement du message reçu et affichage dans l'application
+                let match = JSON.parse(message.body);
+                afficherMatch(match);
             });
         });
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("connectBtn").addEventListener("click", connect);
-        document.getElementById("addMatchBtn").addEventListener("click", addMatch);
+    function afficherMatch(match) {
+        // Récupération de l'élément où afficher le match (par exemple, un tableau ou une liste)
+        let container = document.getElementById("match");
+
+        // Création d'un élément pour afficher les détails du match
+        let matchElement = document.createElement("div");
+        matchElement.classList.add("match");
+
+        // Construction de la représentation HTML du match
+        matchElement.innerHTML = `
+        <h3>${match.team1} vs ${match.team2}</h3>
+        <p>Date: ${match.date}</p>
+        <p>Score: ${match.score1} - ${match.score2}</p>
+        <p>${match.termine ? "Match terminé" : "Match en cours"}</p>
+        <img src="${match.image}" alt="Image du match">
+    `;
+
+        // Ajout du match à l'élément conteneur
+        container.appendChild(matchElement);
+    }
+
+    $(document).ready(function () {
+        $("#connectBtn").click(connect);
+        $("#addMatchBtn").click(addMatch);
     });
 
     function addMatch() {
-        let date = document.getElementById("date")
-        let team1 = document.getElementById("team1").value;
-        let team2 = document.getElementById("team2").value;
-        let score1 = document.getElementById("score1").value;
-        let score2 = document.getElementById("score2").value;
-        let termine = document.getElementById("termine").checked;
-        let image = document.getElementById("image").value;
+        let date = $("#date").val();
+        let team1 = $("#team1").val();
+        let team2 = $("#team2").val();
+        let score1 = $("#score1").val();
+        let score2 = $("#score2").val();
+        let termine = $("#termine").is(":checked");
+        let image = $("#image").val();
 
-        let matches = {
+        let match = {
             date: date,
             team1: team1,
             team2: team2,
@@ -100,9 +117,21 @@
             termine: termine,
             image: image
         };
-
-        stompClient.send("/ws/matchesweb", {}, JSON.stringify(matches));
+        let matchJson = JSON.stringify(match);
+        stompClient.send("/topic/newMatch", {}, matchJson);
+        match.value = '';
     }
+    function updateMessageArea(messages) {
+        var messageArea = document.getElementById('messageArea');
+        messageArea.innerHTML = '';
+        messages.forEach(function (message) {
+            var messageElement = document.createElement('div');
+            messageElement.appendChild(document.createTextNode(message.pseudo + ": " + message.message));
+            messageArea.appendChild(messageElement);
+        });
+    }
+
+
 </script>
 </body>
 </html>
